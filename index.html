@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7671921785586342" crossorigin="anonymous"></script>
+<title>QR Code Scanner & Generator SA - Scan and Create QR Free</title>
+<meta name="description" content="Free QR scanner and generator. Scan QR with camera, create QR for WhatsApp, business, wifi. No app needed. Works on phone. South Africa.">
+<style>
+body{font-family:sans-serif;background:#eff6ff;margin:0;padding:15px;display:flex;justify-content:center}
+.box{background:white;max-width:600px;width:100%;padding:25px;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.1)}
+h1{color:#2563eb;text-align:center}
+.tabs{display:flex;gap:10px;margin:20px 0}
+.tab{flex:1;padding:14px;border-radius:10px;border:2px solid #e5e7eb;background:#f9fafb;font-weight:bold;cursor:pointer;text-align:center}
+.tab.active{background:#2563eb;color:white;border-color:#2563eb}
+input,textarea{width:100%;padding:14px;margin:10px 0;border:2px solid #e5e7eb;border-radius:10px;box-sizing:border-box;font-size:16px}
+button{width:100%;background:#2563eb;color:white;border:0;padding:16px;border-radius:10px;font-size:18px;font-weight:bold;cursor:pointer}
+button:hover{background:#1d4ed8}
+#reader{width:100%;margin-top:15px;border-radius:10px;overflow:hidden}
+#result{margin-top:15px;padding:15px;background:#f0fdf4;border-radius:10px;display:none;word-break:break-all}
+#qrcode{margin:20px auto;text-align:center;background:#f9fafb;padding:20px;border-radius:10px;display:none}
+#qrcode img{max-width:250px;border:8px solid white;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
+.section{display:none}.section.active{display:block}
+</style>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+<body>
+<div class="box">
+<h1>QR Scanner & Generator</h1>
+<div class="tabs">
+<div class="tab active" onclick="showTab('gen')">Generate QR</div>
+<div class="tab" onclick="showTab('scan')">Scan QR</div>
+</div>
+
+<div id="gen" class="section active">
+<p style="text-align:center;color:#666">Create QR for WhatsApp, Facebook, Menu, Wifi</p>
+<textarea id="text" placeholder="Enter link, number, or message..."></textarea>
+<button onclick="makeQR()">Generate QR Code</button>
+<div id="qrcode"></div>
+</div>
+
+<div id="scan" class="section">
+<p style="text-align:center;color:#666">Scan any QR with your camera - No app needed</p>
+<button onclick="startScan()" id="scanBtn">Start Camera Scanner</button>
+<div id="reader"></div>
+<div id="result"></div>
+<p style="font-size:13px;color:#666;text-align:center;margin-top:15px">Allow camera permission. Point camera at QR code. Works best in good light.</p>
+</div>
+
+<p style="font-size:12px;color:#888;text-align:center;margin-top:25px">Free tool for SA small business, salon, spaza, market. No data saved.</p>
+</div>
+<script>
+function showTab(t){
+ document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+ document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+ document.getElementById(t).classList.add('active');
+ event.target.classList.add('active');
+}
+function makeQR(){
+ let txt=document.getElementById('text').value.trim();
+ if(!txt){alert('Enter text');return;}
+ let url='https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+encodeURIComponent(txt);
+ document.getElementById('qrcode').style.display='block';
+ document.getElementById('qrcode').innerHTML=`<img src="${url}"><br><br><a href="${url}" download="qr.png"><button style="background:#10b981">Download QR</button></a>`;
+}
+let scanner;
+function startScan(){
+ document.getElementById('scanBtn').innerText='Scanning...';
+ const resultDiv=document.getElementById('result');
+ scanner=new Html5Qrcode("reader");
+ scanner.start({facingMode:"environment"}, {fps:10, qrbox:250},
+  (decoded)=>{
+   resultDiv.style.display='block';
+   resultDiv.innerHTML=`<b>Scanned Result:</b><br>${decoded}<br><br><a href="${decoded}" target="_blank"><button style="background:#10b981">Open Link</button></a><br><br><button onclick="copyResult('${decoded.replace(/'/g,"\\'")}')">Copy Text</button>`;
+   scanner.stop();
+   document.getElementById('scanBtn').innerText='Scan Again';
+  },
+  (err)=>{}
+ ).catch(e=>{alert('Camera failed: '+e); document.getElementById('scanBtn').innerText='Start Camera Scanner';});
+}
+function copyResult(t){navigator.clipboard.writeText(t); alert('Copied: '+t);}
+</script>
+</body>
+</html>
